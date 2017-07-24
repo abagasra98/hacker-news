@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ApolloProvider, createNetworkInterface, ApolloClient} from 'react-apollo';
-import './index.css';
-import App from './App';
+import {ApolloProvider, createNetworkInterface ,ApolloClient} from 'react-apollo';
+import './styles/index.css';
+import App from './components/App';
 import registerServiceWorker from './registerServiceWorker';
 
 const networkInterface = createNetworkInterface({
