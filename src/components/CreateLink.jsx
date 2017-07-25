@@ -42,6 +42,7 @@ class CreateLink extends React.Component {
         url,
       },
     });
+    this.props.history.push('/');
   }
 }
 
