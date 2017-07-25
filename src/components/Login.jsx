@@ -65,7 +65,7 @@ class Login extends React.Component {
           password,
         },
       });
-      const id = result.data.siginUser.user.id;
+      const id = result.data.signinUser.user.id;
       const token = result.data.signinUser.token;
       this._saveUserData(id, token);
     } else {
@@ -76,7 +76,7 @@ class Login extends React.Component {
           password,
         },
       });
-      const id = result.data.signinUser.id;
+      const id = result.data.signinUser.user.id;
       const token = result.data.signinUser.token;
       this._saveUserData(id, token);
     }
