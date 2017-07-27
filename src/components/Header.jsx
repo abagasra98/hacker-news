@@ -11,6 +11,8 @@ class Header extends React.Component {
         <div className="flex flex-fixed black">
           <div className="fw7 mr1">Hacker News</div>
           <Link className="ml1 no-underline black" to="/">new</Link>
+          <div className="ml1">|</div>
+          <Link to="/search" className="ml1 no-underline black">search</Link>
           {userId &&
             <div className="flex">
               <div className="ml1">|</div>
