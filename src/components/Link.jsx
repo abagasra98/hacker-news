@@ -1,8 +1,9 @@
 import React from 'react';
+import {gql, graphql} from 'react-apollo';
 import {GC_USER_ID} from '../constants';
 import {timeDifferenceForDate} from '../utils';
 
-export default class Link extends React.Component {
+class Link extends React.Component {
   render() {
     const userId = localStorage.getItem(GC_USER_ID);
     return (
@@ -20,6 +21,45 @@ export default class Link extends React.Component {
   }
 
   _voteForLink = async () => {
-    // TODO: Implement in Chapter 6
+    const userId = localStorage.getItem(GC_USER_ID);
+    const voterIds = this.props.link.votes.map(vote => vote.user.id);
+    if (voterIds.includes(userId)) {
+      console.log(`User (${userId}) already voted for this link.`);
+      return;
+    }
+
+    const linkId = this.props.link.id;
+    await this.props.createVoteMutation({
+      variables: {
+        userId,
+        linkId,
+      },
+      update: (store, {data: {createVote}}) => {
+        this.props.updateStoreAfterVote(store, createVote, linkId);
+      }
+    });
   }
 }
+
+const CREATE_VOTE_MUTATION = gql`
+  mutation CreateVoteMutation($userId: ID!, $linkId: ID!) {
+    createVote(userId: $userId, linkId: $linkId) {
+      id
+      link {
+        votes {
+          id
+          user {
+            id
+          }
+        }
+      }
+      user {
+        id
+      }
+    }
+  }
+`
+
+export default graphql(CREATE_VOTE_MUTATION, {
+  name: 'createVoteMutation'
+})(Link);
