@@ -1,6 +1,7 @@
 import React from 'react';
 import {graphql, gql} from 'react-apollo';
 import Link from './Link';
+import {GC_USER_ID, GC_AUTH_TOKEN, LINKS_PER_PAGE} from '../constants';
 
 class LinkList extends React.Component {
   componentDidMount() {
@@ -127,8 +128,8 @@ class LinkList extends React.Component {
 }
 
 export const ALL_LINKS_QUERY = gql`
-  query AllLinksQuery {
-    allLinks {
+  query AllLinksQuery($first: Int, $skip: Int, $orderBy: LinkOrderBy) {
+    allLinks(first: $first, skip: $skip, orderBy: $orderBy) {
       id
       createdAt
       url
@@ -144,7 +145,22 @@ export const ALL_LINKS_QUERY = gql`
         }
       }
     }
+    _allLinksMeta {
+      count
+    }
   }
 `
 
-export default graphql(ALL_LINKS_QUERY, { name: 'allLinksQuery' }) (LinkList)
+export default graphql(ALL_LINKS_QUERY, {
+  name: 'allLinksQuery',
+  options: (ownProps) => {
+    const page = parseInt(ownProps.match.params.page, 10);
+    const isNewPage = ownProps.location.pathname.includes('new');
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 100;
+    const orderBy = isNewPage ? 'createdAt_DESC' : null;
+    return {
+      variables: {first, skip, orderBy}
+    }
+  }
+}) (LinkList);
