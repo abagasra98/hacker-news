@@ -18,15 +18,49 @@ class LinkList extends React.Component {
       return <div>Error</div>;
     }
 
-    const linksToRender = this.props.allLinksQuery.allLinks;
+    const isNewPage = this.props.location.pathname.includes('new');
+    const linksToRender = this._getLinksToRender(isNewPage);
+    const userId = localStorage.getItem(GC_USER_ID);
 
     return (
       <div>
-        {linksToRender.map((link, index) => (
-          <Link key={link.id} updateStoreAfterVote={this._updateCacheAfterVote} index={index} link={link} />
-        ))}
+        {!userId ?
+          <button onClick={() => {
+            this.props.history.push('/login')
+          }}>Login</button> :
+          <div>
+            <button onClick={() => {
+              this.props.history.push('/create')
+            }}>New Post</button>
+            <button onClick={() => {
+              localStorage.removeItem(GC_USER_ID)
+              localStorage.removeItem(GC_AUTH_TOKEN)
+              this.forceUpdate() // doesn't work
+            }}>Logout</button>
+          </div>
+        }
+        <div>
+          {linksToRender.map((link, index) => (
+            <Link key={link.id} updateStoreAfterVote={this._updateCacheAfterVote} index={index} link={link} />
+          ))}
+        </div>
+        {isNewPage &&
+        <div>
+          <button onClick={() => this._previousPage()}>Previous</button>
+          <button onClick={() => this._nextPage()}>Next</button>
+        </div>
+        }
       </div>
     );
+  }
+
+  _getLinksToRender = (isNewPage) => {
+    if (isNewPage) {
+      return this.props.allLinksQuery.allLinks;
+    }
+    const rankedLinks = this.props.allLinksQuery.allLinks.slice();
+    rankedLinks.sort((l1, l2) => l2.votes.length - l1.votes.length);
+    return rankedLinks;
   }
 
   _updateCacheAfterVote = (store, createVote, linkId) => {
